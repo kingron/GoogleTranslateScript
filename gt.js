@@ -2,6 +2,12 @@
   Author: Kingron
   Date: 2017-7-6
 */
+String.prototype.trim = function()
+{
+    // 用正则表达式将前后空格
+    // 用空字符串替代。
+    return this.replace(/(^\s*)|(\s*$)/g, "");
+}
 
 function b(a, b) {
 	for (var d = 0; d < b.length - 2; d += 3) {
@@ -30,6 +36,12 @@ function tk(a,TKK) {
 var args = WScript.Arguments;
 if (args.length == 0) WScript.Quit(-1);
 
+var sl = "en"
+if (args[1] != null) sl = args[1];
+
+var tl = "zh-CN"
+if (args[2] != null) tl = args[2];
+
 var tkk = 0.0;
 var http = new ActiveXObject("Msxml2.XMLHTTP")
 http.open("GET", "https://translate.google.com", false)
@@ -42,8 +54,9 @@ if (start >=0 && end >= 0)
 {
 	var sub = text.substring(start + 5, end + 13);
 	tkk = eval(sub);
-	var new_tk = tk(args.item(0), tkk);
-	http.open("GET", "https://translate.google.com/translate_a/single?client=t&sl=en&tl=zh-CN&hl=en&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&otf=1&ssel=0&tsel=0&kc=10&tk=" + new_tk + "&q=" + args.item(0), false);
+	var new_tk = tk(args.item(0).trim(), tkk);
+
+	http.open("GET", "https://translate.google.com/translate_a/single?client=t&sl=" + sl + "&tl=" + tl + "&hl=en&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&otf=1&tk=" + new_tk + "&q=" + args.item(0), false);
 	http.send();
 	text = http.responseText;
 	// WScript.Echo(text);
