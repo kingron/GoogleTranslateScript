@@ -33,16 +33,17 @@ function tk(a,TKK) {
 	return a.toString() + "." + (a ^ h)
 }
 
+function isChinese(str){
+	if(/^[\u3220-\uFA29]+$/.test(str)){
+		return true;
+	}else{
+		return false;
+	}
+}
+
 var args = WScript.Arguments;
 if (args.length == 0) WScript.Quit(-1);
 
-var sl = "en"
-if (args[1] != null) sl = args[1];
-
-var tl = "zh-CN"
-if (args[2] != null) tl = args[2];
-
-var tkk = 0.0;
 var http = new ActiveXObject("Msxml2.XMLHTTP")
 http.open("GET", "https://translate.google.com", false)
 http.send();
@@ -52,11 +53,31 @@ var end = text.indexOf("(a+b)})())');")
 
 if (start >=0 && end >= 0)
 {
+	var sl, tl;
+	var words = "";
+	for (i = 0; i < args.length; i++) 
+	{
+	  words += args.item(i).trim() + " ";
+	}
+	words = words.trim();
+	var tkk = 0.0;
+	var url = ""
 	var sub = text.substring(start + 5, end + 13);
 	tkk = eval(sub);
-	var new_tk = tk(args.item(0).trim(), tkk);
-
-	http.open("GET", "https://translate.google.com/translate_a/single?client=t&sl=" + sl + "&tl=" + tl + "&hl=en&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&otf=1&tk=" + new_tk + "&q=" + args.item(0), false);
+	var new_tk = tk(words, tkk);
+	
+	if (isChinese(words)) {
+		sl = "zh-CN";
+		tl = "en";
+	}
+	else {
+		sl = "en"
+		tl = "zh-CN"
+	}
+	
+	url = "https://translate.google.com/translate_a/single?client=t&sl=" + sl + "&tl=" + tl + "&hl=en&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&otf=1&tk=" + new_tk + "&q=" + encodeURI(words);
+	
+	http.open("GET", url, false);
 	http.send();
 	text = http.responseText;
 	// WScript.Echo(text);
@@ -69,6 +90,7 @@ if (start >=0 && end >= 0)
 			msg += trans[i].toString() + "\r\n-----------\r\n";
 	}		
 	WScript.Echo(msg);
+	WScript.Quit(0);
 }
 else
 {
