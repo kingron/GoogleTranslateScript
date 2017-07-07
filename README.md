@@ -10,6 +10,8 @@ Usage
 wscript gt.js "your words"
 For example:
   wscript gt.js "help"
+
+If you install the AutoHotKey, Afer run gt.ahk, you can press Win+Q to input words(default use Clipboard text) and translate it.
   
 Thanks
 ======
